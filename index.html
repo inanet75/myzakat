@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyZakat - Direktori Zakat & JKM Malaysia</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .search-box {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 15px 20px;
+            font-size: 1em;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            flex: 1;
+            min-width: 150px;
+            padding: 15px 20px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: center;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 1em;
+        }
+
+        .tab:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        .tab.active {
+            background: white;
+            color: #667eea;
+            border-color: white;
+        }
+
+        .states-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .state-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .state-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .state-card h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-item {
+            margin-bottom: 15px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            font-size: 0.9em;
+        }
+
+        .info-item strong {
+            display: block;
+            color: #495057;
+            margin-bottom: 5px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            text-align: center;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: white;
+        }
+
+        .btn-primary {
+            background: #667eea;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+
+        .btn-success {
+            background: #28a745;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .no-results {
+            text-align: center;
+            color: white;
+            font-size: 1.2em;
+            padding: 40px;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2em;
+            }
+
+            .states-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+
+            .tab {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-mosque"></i> MyZakat</h1>
+            <p>Direktori Lengkap Zakat & JKM Seluruh Malaysia</p>
+        </header>
+
+        <div class="search-box">
+            <input type="text" class="search-input" id="searchInput" placeholder="🔍 Cari negeri, bandar atau nama institusi...">
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" onclick="filterType('all')">Semua</div>
+            <div class="tab" onclick="filterType('zakat')">Zakat</div>
+            <div class="tab" onclick="filterType('jkm')">JKM</div>
+        </div>
+
+        <div class="states-grid" id="statesGrid"></div>
+        <div class="no-results" id="noResults">
+            <i class="fas fa-search"></i><br>Tiada hasil ditemui
+        </div>
+    </div>
+
+    <script>
+        const data = [
+            {state:"Johor",type:"zakat",name:"Majlis Agama Islam Negeri Johor (MAINJ)",address:"Tingkat 3-5, Wisma PERZIM, Jalan Air Molek, 80000 Johor Bahru, Johor",phone:"07-2249666",website:"https://www.zakat.johor.gov.my",maps:"https://maps.google.com/?q=Majlis+Agama+Islam+Johor+Bahru"},
+            {state:"Johor",type:"jkm",name:"JKM Negeri Johor",address:"Tingkat 11 & 12, Bangunan Sultan Ibrahim, Bukit Timbalan, 80000 Johor Bahru",phone:"07-2237884",website:"https://www.jkm.gov.my",maps:"https://maps.google.com/?q=JKM+Johor+Bahru"},
+            {state:"Kedah",type:"zakat",name:"Lembaga Zakat Negeri Kedah",address:"Kompleks LZNK, Jalan Telok Wanjah, 05200 Alor Setar, Kedah",phone:"04-7344000",website:"https://www.zakatkedah.com.my",maps:"https://maps.google.com/?q=Lembaga+Zakat+Kedah+Alor+Setar"},
+            {state:"Kedah",type:"jkm",name:"JKM Negeri Kedah",address:"Tingkat 3-5, Wisma Persekutuan, Jalan Kampung Baru, 05000 Alor Setar",phone:"04-7721204",website:"https://www.jkm.gov.my",maps:"https://maps.google.com/?q=JKM+Alor+Setar"},
+            {state:"Kelantan",type:"zakat",name:"Majlis Agama Islam dan Adat Istiadat Melayu Kelantan (MAIK)",address:"Kompleks Islam Kota Darulnaim, Jalan Hospital, 15000 Kota Bharu",phone:"09-7447011",website:"https://www.e-maik.my",maps:"https://maps.google.com/?q=MAIK+Kota+Bharu"},
+            {state:"Kelantan",type:"jkm",name:"JKM Negeri Kelantan",address:"Tingkat 1-3, Wisma Persekutuan, Jalan Bayam, 15200 Kota Bharu",phone:"09-7481204",website:"https://www.jkm.gov.my",maps:"https://maps.google.com/?q=JKM+Kota+Bharu"},
+            {state:"Melaka",type:"zakat",name:"Majlis Agama Islam Melaka (MAIM)",address:"Tingkat 3, Wisma MAIM, Jalan Bukit Palah, 75200 Melaka",phone:"06-2817979",website:"https://www.maim.gov.my",maps:"https://maps.google.com/?q=MAIM+Melaka"},
+            {state:"Melaka",type:"jkm",name:"JKM Negeri Melaka",address:"Tingkat 2 & 3, Plaza Hang Tuah, Jalan Hang Tuah, 75300 Melaka",phone:"06-2813277",website:"https://www.jkm.gov.my",maps:"https://maps.google.com/?q=JKM+Melaka"},
+            {state:"Negeri Sembilan",type:"zakat",name:"Majlis Agama Islam Negeri Sembilan (MAINS)",address:"Karung Berkunci 10, Pejabat Pos Seremban, 70990 Seremban",phone:"06-7621543",website:"https://www.mains.gov.my",maps:"https://maps.google.com/?q=MAINS+Seremban"},
+            {state:"Negeri Sembilan",type:"jkm",name:"JKM Negeri Sembilan",address:"Tingkat 2, Wisma Persekutuan, Jalan Dato Hamzah, 70000 Seremban",phone:"06-7632277",website:"https://www.jkm.gov.my",maps:"https://maps.google.com/?q=JKM+Seremban"},
+            {state:"Pahang",type:"zakat",name:"Pusat Kutipan Zakat Pahang (PKZP)",address:"Tingkat Bawah, Wisma Haji Ali, Jalan Mahkota, 25000 Kuantan",phone:"09-5055400",website:"https://www.zakatpahang.my",maps:"https://maps.google.com/?q=Zakat+Pahang+Kuantan"},
+            {state:"Pahang",type:"jkm",name:"JKM Negeri Pahang",address:"Kompleks Teruntum, Jalan Gambut, 25000 Kuantan",phone:"09-5162277",website:"https://www.jkm.gov.my",maps:"https://maps.google.com/?q=JKM+Kuantan"},
+            {state:"Perak",type:"zakat",name:"Majlis Agama Islam dan Adat Melayu Perak (MAIPk)",address:"Jalan Panglima Bukit Gantang Wahab, 30000 Ipoh, Perak",phone:"05-5269600",website:"https://www.maip.my",maps:"https://maps.google.com/?q=MAIP+Ipoh"},
+            {state:"Perak",type:"jkm",name:"JKM Negeri Perak",address:"Tingkat 2, Bangunan Persekutuan, Jalan Panglima Bukit Gantang Wahab, 30000 Ipoh",phone:"05-2551204",website:"https://www.jkm.gov.my",maps:"https://maps.google.com/?q=JKM+Ipoh"},
+            {state:"Perlis",type:"zakat",name:"Majlis Agama Islam Negeri Perlis (MAIPs)",address:"Kompleks MAIPs, Jalan Penjara, 01000 Kangar, Perlis",phone:"04-9760093",website:"https://www.maips.gov.my",maps:"https://maps.google.com/?q=MAIPS+Kangar"},
+            {state:"Perlis",type:"jkm",name:"JKM Negeri Perlis",address:"Tingkat 2, Wisma Persekutuan, Jalan Jubli Emas, 01000 Kangar",phone:"04-9767128",website:"https://www.jkm.gov.my",maps:"https://maps.google.com/?q=JKM+Kangar"},
+            {state:"Pulau Pinang",type:"zakat",name:"Pusat Pungutan Zakat (PPZ-MAIPP)",address:"Jalan Masjid Negeri, 11600 Jelutong, Pulau Pinang",phone:"04-2288000",website:"https://www.zakatpenang.com",maps:"https://maps.google.com/?q=PPZ+MAIPP+Penang"},
+            {state:"Pulau Pinang",type:"jkm",name:"JKM Negeri Pulau Pinang",address:"Tingkat 3, KOMTAR, 10000 Georgetown",phone:"04-2622277",website:"https://www.jkm.gov.my",maps:"https://maps.google.com/?q=JKM+Penang"},
+            {state:"Sabah",type:"zakat",name:"Majlis Ugama Islam Sabah (MUIS)",address:"Wisma MUIS, Jalan Tunku Abdul Rahman, 88100 Kota Kinabalu",phone:"088-232688",website:"https://www.muis.gov.my",maps:"https://maps.google.com/?q=MUIS+Kota+Kinabalu"},
+            {state:"Sabah",type:"jkm",name:"JKM Negeri Sabah",address:"Tingkat 11, Rumah Persekutuan, Jalan Mat Salleh, 88590 Kota Kinabalu",phone:"088-232277",website:"https://www.jkm.gov.my",maps:"https://maps.google.com/?q=JKM+Kota+Kinabalu"},
+            {state:"Sarawak",type:"zakat",name:"Tabung Baitulmal Sarawak",address:"Wisma Islam, Jalan Tun Ahmad Zaidi Adruce, 93400 Kuching",phone:"082-446000",website:"https://www.tbs.gov.my",maps:"https://maps.google.com/?q=Tabung+Baitulmal+Sarawak"},
+            {state:"Sarawak",type:"jkm",name:"JKM Negeri Sarawak",address:"Tingkat 9, Wisma Sumber Alam, Jalan Stadium, 93100 Kuching",phone:"082-441204",website:"https://www.jkm.gov.my",maps:"https://maps.google.com/?q=JKM+Kuching"},
+            {state:"Selangor",type:"zakat",name:"Lembaga Zakat Selangor (LZS)",address:"Tingkat 9, Bangunan LZS, Jalan Tengku Ampuan Zabedah C9/C, 40100 Shah Alam",phone:"03-55221511",website:"https://www.zakatselangor.com.my",maps:"https://maps.google.com/?q=Lembaga+Zakat+Selangor"},
+            {state:"Selangor",type:"jkm",name:"JKM Negeri Selangor",address:"Tingkat 14, Bangunan Sultan Salahuddin Abdul Aziz Shah, 40000 Shah Alam",phone:"03-55101204",website:"https://www.jkm.gov.my",maps:"https://maps.google.com/?q=JKM+Shah+Alam"},
+            {state:"Terengganu",type:"zakat",name:"Majlis Agama Islam dan Adat Melayu Terengganu (MAIDAM)",address:"Bukit Kecil, Jalan Sultan Ismail, 20200 Kuala Terengganu",phone:"09-6222057",website:"https://www.maidam.gov.my",maps:"https://maps.google.com/?q=MAIDAM+Kuala+Terengganu"},
+            {state:"Terengganu",type:"jkm",name:"JKM Negeri Terengganu",address:"Tingkat 4, Wisma Persekutuan, Jalan Sultan Ismail, 20200 Kuala Terengganu",phone:"09-6221204",website:"https://www.jkm.gov.my",maps:"https://maps.google.com/?q=JKM+Kuala+Terengganu"},
+            {state:"W.P. Kuala Lumpur",type:"zakat",name:"Pusat Pungutan Zakat (PPZ-MAIWP)",address:"Jalan Duta, 50480 Kuala Lumpur",phone:"03-62010080",website:"https://www.zakat.com.my",maps:"https://maps.google.com/?q=PPZ+MAIWP+Kuala+Lumpur"},
+            {state:"W.P. Kuala Lumpur",type:"jkm",name:"JKM Wilayah Persekutuan KL",address:"Tingkat 32-33, Menara Tun Razak, Jalan Raja Laut, 50350 Kuala Lumpur",phone:"03-26981204",website:"https://www.jkm.gov.my",maps:"https://maps.google.com/?q=JKM+Kuala+Lumpur"},
+            {state:"W.P. Labuan",type:"zakat",name:"Majlis Agama Islam Wilayah Persekutuan (MAIWP) Labuan",address:"Tingkat 3, Wisma MAIWP, 87000 Labuan",phone:"087-411766",website:"https://www.maiwp.gov.my",maps:"https://maps.google.com/?q=MAIWP+Labuan"},
+            {state:"W.P. Labuan",type:"jkm",name:"JKM Wilayah Persekutuan Labuan",address:"Pejabat JKM Labuan, 87000 Labuan",phone:"087-414277",website:"https://www.jkm.gov.my",maps:"https://maps.google.com/?q=JKM+Labuan"},
+            {state:"W.P. Putrajaya",type:"jkm",name:"JKM Wilayah Persekutuan Putrajaya",address:"Aras 3-7, Blok D2, Kompleks D, Pusat Pentadbiran Kerajaan Persekutuan, 62551 Putrajaya",phone:"03-88883100",website:"https://www.jkm.gov.my",maps:"https://maps.google.com/?q=JKM+Putrajaya"}
+        ];
+
+        let currentFilter = 'all';
+
+        function renderCards(filteredData) {
+            const grid = document.getElementById('statesGrid');
+            const noResults = document.getElementById('noResults');
+            
+            if (filteredData.length === 0) {
+                grid.style.display = 'none';
+                noResults.style.display = 'block';
+                return;
+            }
+
+            grid.style.display = 'grid';
+            noResults.style.display = 'none';
+            
+            grid.innerHTML = filteredData.map(item => `
+                <div class="state-card">
+                    <h3>
+                        <i class="fas fa-${item.type === 'zakat' ? 'mosque' : 'hands-helping'}"></i>
+                        ${item.state}
+                    </h3>
+                    <div class="info-item">
+                        <strong>${item.type === 'zakat' ? '🕌 Zakat' : '🤝 JKM'}</strong>
+                        ${item.name}
+                    </div>
+                    <div class="info-item">
+                        <strong>📍 Alamat</strong>
+                        ${item.address}
+                    </div>
+                    <div class="info-item">
+                        <strong>📞 Telefon</strong>
+                        ${item.phone}
+                    </div>
+                    <div class="btn-group">
+                        <a href="${item.website}" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
+                            <i class="fas fa-globe"></i> Website
+                        </a>
+                        <a href="${item.maps}" target="_blank" rel="noopener noreferrer" class="btn btn-success">
+                            <i class="fas fa-map-marker-alt"></i> Google Maps
+                        </a>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterData() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            
+            let filtered = data.filter(item => {
+                const matchesSearch = item.state.toLowerCase().includes(searchTerm) ||
+                                    item.name.toLowerCase().includes(searchTerm) ||
+                                    item.address.toLowerCase().includes(searchTerm);
+                
+                const matchesType = currentFilter === 'all' || item.type === currentFilter;
+                
+                return matchesSearch && matchesType;
+            });
+            
+            renderCards(filtered);
+        }
+
+        function filterType(type) {
+            currentFilter = type;
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            filterData();
+        }
+
+        document.getElementById('searchInput').addEventListener('input', filterData);
+
+        renderCards(data);
+    </script>
+</body>
+</html>
